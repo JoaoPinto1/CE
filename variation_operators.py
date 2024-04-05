@@ -113,6 +113,12 @@ def bit_flip_mutation(p):
     p['genotype'][at] ^= 1 
     return p
 
+def change_value_mutation(p):
+    p['fitness'] = None
+    at = random.randint(0, len(p['genotype']) - 1)
+    p['genotype'][at] = random.randint(0, 3) 
+    return p
+
 ## Integers ##
 def append_mutation(genotype_size):
     def mutation(p):

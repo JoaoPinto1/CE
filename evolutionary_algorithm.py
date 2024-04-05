@@ -26,8 +26,8 @@ def ea(config):
                 evaluate(i, config)
         population.sort(key = lambda x: x['fitness'], reverse=config['maximization'])
         best = (config['mapping'](population[0]['genotype']), population[0]['fitness'])
-        if config['interactive_plot'] is not None:
-           update_graph(it, best[1], *config['interactive_plot'])
+        #if config['interactive_plot'] is not None:
+           #update_graph(it, best[1], *config['interactive_plot'])
         print("Gen:", it, best[0], best[1])
         bests.append(best)
         new_population = []
