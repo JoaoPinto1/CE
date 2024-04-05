@@ -7,7 +7,13 @@ from selection import tournament, survivor_elitism, survivor_generational
 from visuals import create_interactive_plot
 from evolutionary_algorithm import *
 
-env = gym.make('FrozenLake-v1', desc=map_4_by_4, is_slippery=False)
+map = 12
+if map == 4:
+    env = gym.make('FrozenLake-v1', desc=map_4_by_4, is_slippery=False)
+if map == 8:
+    env = gym.make('FrozenLake-v1', desc=map_8_by_8, is_slippery=False)
+if map == 12:
+    env = gym.make('FrozenLake-v1', desc=map_12_by_12, is_slippery=False)
 
 def function_fitness(config):
     def fitness(individual):
@@ -18,9 +24,9 @@ def function_fitness(config):
 def function_evaluation(phenotype):
     #TODO: implement fitness function
     fitness = 0
-    row = math.floor(phenotype[-1][0] / 4)
-    col = phenotype[-1][0] % 4
-    fitness = 3-row + 3-col
+    row = math.floor(phenotype[-1][0] / map)
+    col = phenotype[-1][0] % map
+    fitness = (map-1)-row + (map-1)-col
     if phenotype[-1][1] and not phenotype[-1][2]:
         fitness *= 10
     fitness += len(phenotype)
@@ -54,7 +60,7 @@ if __name__ == '__main__':
     # Dictonary with Configurations for the Evolutionary Algorithm
     config = {
         'population_size' : 15,
-        'generations' : 1000,
+        'generations' : 2000,
         'genotype_size' : MAX_ITERATIONS_4_by_4,
         'prob_crossover' : 0.90,
         'prob_mutation' : 0.1,
