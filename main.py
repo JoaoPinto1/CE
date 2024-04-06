@@ -24,11 +24,15 @@ def function_fitness(config):
 def function_evaluation(phenotype):
     #TODO: implement fitness function
     fitness = 0
+    
     row = math.floor(phenotype[-1][0] / map)
     col = phenotype[-1][0] % map
+    
     fitness = (map-1)-row + (map-1)-col
+    
     if phenotype[-1][1] and not phenotype[-1][2]:
         fitness *= 10
+        
     fitness += len(phenotype)
     return fitness
 
@@ -59,8 +63,9 @@ def generate_random_individuals(config):
 if __name__ == '__main__':
     # Dictonary with Configurations for the Evolutionary Algorithm
     config = {
+        'runs' : 3,
         'population_size' : 15,
-        'generations' : 2000,
+        'generations' : 600,
         'genotype_size' : MAX_ITERATIONS_4_by_4,
         'prob_crossover' : 0.90,
         'prob_mutation' : 0.1,
@@ -77,6 +82,45 @@ if __name__ == '__main__':
     }
     config['fitness_function'] = function_fitness(config)
     
-    random.seed(config['seed'])
+    best_overall = []
+    average_overall = []
+    
     observation, info = env.reset(seed=config['seed'])
-    bests = ea(config)
+    
+    for i in range(config['runs']):
+        random.seed(config['seed'] + i)
+        best , average = ea(config)
+        
+        if best_overall == []:
+            best_overall = best
+            average_overall = average
+            
+        elif best_overall[-1][1] > best[-1][1]:
+            best_overall = best
+            average_overall = average     
+    
+    # write results to file
+    if map == 4:
+        with open('map_4_by_4.txt', 'w') as file:
+            for item in best_overall:
+                file.write("%s\n" % str(item))
+        with open('map_4_by_4_average.txt', 'w') as file:
+            for item in average_overall:
+                file.write("%s\n" % str(item))
+                
+    elif map == 8:
+        with open('map_8_by_8.txt', 'w') as file:
+            for item in best_overall:
+                file.write("%s\n" % str(item))
+        with open('map_8_by_8_average.txt', 'w') as file:
+            for item in average_overall:
+                file.write("%s\n" % str(item))
+                
+    else:
+        with open('map_12_by_12.txt', 'w') as file:
+            for item in best_overall:
+                file.write("%s\n" % str(item))
+        with open('map_12_by_12_average.txt', 'w') as file:
+            for item in average_overall:
+                file.write("%s\n" % str(item))
+    

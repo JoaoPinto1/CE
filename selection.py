@@ -5,6 +5,7 @@ import copy
 ## Parent Selection ##
 def tournament(tournament_size : int, maximization=True) -> dict:
     def tournament(population):
+
         pool = random.sample(population, tournament_size)
         pool.sort(key=lambda i: i['fitness'], reverse=maximization)
         return copy.deepcopy(pool[0])
