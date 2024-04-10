@@ -7,7 +7,7 @@ from selection import tournament, survivor_elitism, survivor_generational
 from visuals import create_interactive_plot
 from evolutionary_algorithm import *
 
-map = 12
+map = 8
 if map == 4:
     env = gym.make('FrozenLake-v1', desc=map_4_by_4, is_slippery=False)
 if map == 8:
@@ -46,30 +46,26 @@ def mapping(genotype):
 def generate_random_individuals(config):
     genotype = []
     #TODO: implement function to create random individuals
-    last = None
     for i in range(config['genotype_size']):
         action = random.randint(0, 3)
-        #while action == 0 and last == 2 or action == 2 and last == 0 or action == 1 and last == 3 or action == 3 and last == 1:
-            #action = random.randint(0, 3)
         genotype.append(action)
-        last = action
     return {'genotype': genotype, 'fitness': None}
 
 
 if __name__ == '__main__':
     # Dictonary with Configurations for the Evolutionary Algorithm
     config = {
-        'population_size' : 15,
+        'population_size' : 100,
         'generations' : 2000,
         'genotype_size' : MAX_ITERATIONS_4_by_4,
-        'prob_crossover' : 0.90,
+        'prob_crossover' : 0.9,
         'prob_mutation' : 0.1,
-        'seed' : 2024, #int(sys.argv[1]),
+        'seed' : 202, #int(sys.argv[1]),
         'generate_individual' : generate_random_individuals,
         'mapping' : mapping,
         'maximization' : False,
         'mutation' : swap_mutation, #TODO: implement mutation function,
-        'crossover' : two_point_crossover, #TODO: implement crossover function,
+        'crossover' : uniform_crossover, #TODO: implement crossover function,
         'parent_selection' : tournament(5, maximization=False),
         'survivor_selection' : survivor_elitism(.02, maximization=False),
         'fitness_function' : None,
@@ -78,5 +74,5 @@ if __name__ == '__main__':
     config['fitness_function'] = function_fitness(config)
     
     random.seed(config['seed'])
-    observation, info = env.reset(seed=config['seed'])
+    observation, info = env.reset(seed=22)
     bests = ea(config)
