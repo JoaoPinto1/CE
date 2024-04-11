@@ -30,7 +30,7 @@ def ea(config):
         total_fitness = sum([i['fitness'] for i in population])
         average.append(total_fitness/config['population_size'])
         
-        best = (config['mapping'](population[0]['genotype']), population[0]['fitness'])
+        best = (config['mapping'](population[0]), population[0]['fitness'])
         #if config['interactive_plot'] is not None:
            #update_graph(it, best[1], *config['interactive_plot'])
         print("Gen:", it, best[0], best[1])
@@ -43,12 +43,25 @@ def ea(config):
                 p2 = config['parent_selection'](population)
                 #Recombination
                 ni = config['crossover'](p1, p2)
+                ni = run_env(config, ni['genotype'])
             else:
                 ni = config['parent_selection'](population)
             #Mutation 
             if random.random() < config['prob_mutation']:
                 ni = config['mutation'](ni)
+                ni = run_env(config, ni['genotype'])
             new_population.append(ni)
         population = config['survivor_selection'](population, new_population)
     return bests , average
 
+def run_env(config, genotype):
+    steps = []
+    observation, info = config['env'].reset(seed=config['seed'])
+    for step in range(len(genotype)):
+        action = genotype[step]
+        observation, reward, terminated, truncated, info = config['env'].step(action)
+        steps.append([observation, terminated, reward])
+        if terminated:
+            genotype = genotype[:step + 1]
+            break
+    return {'genotype': genotype, 'steps': steps, 'fitness': None}

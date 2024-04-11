@@ -7,84 +7,89 @@ from selection import tournament, survivor_elitism, survivor_generational
 from visuals import create_interactive_plot
 from evolutionary_algorithm import *
 
-map = 8
-if map == 4:
-    env = gym.make('FrozenLake-v1', desc=map_4_by_4, is_slippery=False)
-if map == 8:
-    env = gym.make('FrozenLake-v1', desc=map_8_by_8, is_slippery=False)
-if map == 12:
-    env = gym.make('FrozenLake-v1', desc=map_12_by_12, is_slippery=False)
 
 def function_fitness(config):
     def fitness(individual):
-        pheno = config['mapping'](individual['genotype'])
-        return function_evaluation(pheno)
+        fitness = function_evaluation(config['mapping'](individual))
+        return fitness
     return fitness
 
-def function_evaluation(phenotype):
-    #TODO: implement fitness function
+def function_evaluation(steps):
     fitness = 0
+    map = config['map_size']
+
+    row = math.floor(steps[-1][0] / map)
+    col = steps[-1][0] % map
     
-    row = math.floor(phenotype[-1][0] / map)
-    col = phenotype[-1][0] % map
+    #Manhattan distance to the goal
+    fitness += (map-1)-row + (map-1)-col
     
-    fitness = (map-1)-row + (map-1)-col
-    
-    if phenotype[-1][1] and not phenotype[-1][2]:
+    #if the last step is a hole or didn't finish
+    if (steps[-1][1] and not steps[-1][2]) or not steps[-1][1]:
+        fitness *= 100
+
+    #Number of steps
+    fitness += len(steps)
+
+    #if there are repeating positions
+    positions = [sublist[0] for sublist in steps]
+    if len(positions) != len(set(positions)):
         fitness *= 10
-        
-    fitness += len(phenotype)
+
     return fitness
 
 def mapping(genotype):
-    phenotype = []
-    observation, info = env.reset(seed=config['seed'])
-    for step in range(config['genotype_size']):
-        action = genotype[step]
-        observation, reward, terminated, truncated, info = env.step(action)
-        phenotype.append([observation, terminated, reward])
-        if terminated:
-            break
-    return phenotype
+    return genotype['steps']
 
 def generate_random_individuals(config):
     genotype = []
-    #TODO: implement function to create random individuals
     for i in range(config['genotype_size']):
         action = random.randint(0, 3)
         genotype.append(action)
-    return {'genotype': genotype, 'fitness': None}
-
+    return run_env(config, genotype)
 
 if __name__ == '__main__':
     # Dictonary with Configurations for the Evolutionary Algorithm
     config = {
+        'map_size' : 4,
         'runs' : 3,
-        'population_size' : 15,
-        'generations' : 600,
-        'genotype_size' : MAX_ITERATIONS_4_by_4,
+        'population_size' : 100,
+        'generations' : 200,
         'prob_crossover' : 0.9,
         'prob_mutation' : 0.1,
-        'seed' : 202, #int(sys.argv[1]),
+        'seed' : 2024, #int(sys.argv[1]),
         'generate_individual' : generate_random_individuals,
         'mapping' : mapping,
         'maximization' : False,
-        'mutation' : swap_mutation, #TODO: implement mutation function,
-        'crossover' : uniform_crossover, #TODO: implement crossover function,
+        'mutation' : change_value_mutation, #TODO: implement mutation function,
+        'crossover' : one_point_crossover, #TODO: implement crossover function,
         'parent_selection' : tournament(5, maximization=False),
         'survivor_selection' : survivor_elitism(.02, maximization=False),
         'fitness_function' : None,
         'interactive_plot' : create_interactive_plot('Evolving...', 'Iteration', 'Quality', (0, 2000), (-2, 10)),
     }
+
+    if config['map_size'] == 4:
+        config['env'] = gym.make('FrozenLake-v1', desc=map_4_by_4, is_slippery=False)
+        config['genotype_size'] = MAX_ITERATIONS_4_by_4
+
+    elif config['map_size'] == 8:
+        config['env'] = gym.make('FrozenLake-v1', desc=map_8_by_8, is_slippery=False)
+        config['genotype_size'] = MAX_ITERATIONS_8_by_8
+
+    else:
+        config['env'] = gym.make('FrozenLake-v1', desc=map_12_by_12, is_slippery=False)
+        config['genotype_size'] = MAX_ITERATIONS_12_by_12
+
     config['fitness_function'] = function_fitness(config)
     
     best_overall = []
     average_overall = []
     
-    observation, info = env.reset(seed=config['seed'])
+    observation, info = config['env'].reset(seed=config['seed'])
     
     for i in range(config['runs']):
-        random.seed(config['seed'] + i)
+        config['seed'] += 1
         best , average = ea(config)
         
         if best_overall == []:
