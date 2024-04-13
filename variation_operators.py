@@ -4,6 +4,11 @@ import random
 ## Crossovers ##
 
 ## Binary ##
+
+
+def no_crossover(parent1, parent2):
+    return parent1
+
 def one_point_crossover(parent1, parent2):
     """
     One Point Crossover
@@ -15,6 +20,7 @@ def one_point_crossover(parent1, parent2):
             genotype.append(parent1['genotype'][i])
         else:
             genotype.append(parent2['genotype'][i])
+            
     return {'genotype': genotype, 'fitness': None} 
 
 
@@ -107,6 +113,9 @@ def cycle_crossover(p1, p2):
 
 ## Mutations ##
 ## Binary ##
+def no_mutation(p):
+    return p
+
 def bit_flip_mutation(p):
     p['fitness'] = None
     at = random.randint(0, len(p['genotype']) - 1)
@@ -117,6 +126,7 @@ def change_value_mutation(p):
     p['fitness'] = None
     at = random.randint(0, len(p['genotype']) - 1)
     p['genotype'][at] = random.randint(0, 3) 
+ 
     return p
 
 ## Integers ##

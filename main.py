@@ -1,4 +1,5 @@
 import gymnasium as gym
+import statistics
 import math
 import random
 from maps_to_evaluate import *
@@ -16,6 +17,7 @@ def function_fitness(config):
 
 def function_evaluation(steps):
     fitness = 0
+      
     map = config['map_size']
 
     row = math.floor(steps[-1][0] / map)
@@ -80,48 +82,70 @@ if __name__ == '__main__':
     else:
         config['env'] = gym.make('FrozenLake-v1', desc=map_12_by_12, is_slippery=False)
         config['genotype_size'] = MAX_ITERATIONS_12_by_12
-
+    
     config['fitness_function'] = function_fitness(config)
     
     best_overall = []
     average_overall = []
-    
+    total_fitness = 0
+    best_fitness = 999999999
+    first_min_index = 0
+    fitness_reached = []
+
     observation, info = config['env'].reset(seed=config['seed'])
     
     for i in range(config['runs']):
         config['seed'] += 1
-        best , average = ea(config)
+        best = ea(config)
+                
+        # Calculate the average fitness , the first time the fitness is reached
+        for i, item in enumerate(best):
+            value_at_i = item[1]  
+            total_fitness += value_at_i  # Add the value to the total
+            
+            # Compare the value with the current minimum
+            if value_at_i < best_fitness:
+                best_fitness = value_at_i
+                first_min_index = i
+
+        fitness_reached.append(first_min_index)
         
         if best_overall == []:
             best_overall = best
-            average_overall = average
             
         elif best_overall[-1][1] > best[-1][1]:
-            best_overall = best
-            average_overall = average     
+            best_overall = best  
     
+    average_first_reached = sum(fitness_reached) / len(fitness_reached)
+    average_fitness = total_fitness / (config['runs'] * config['generations'])
+    best_fitness = best_overall[-1][1]
+    best_length = len(best_overall[-1][0])
+    
+    
+    # Calculate Standard Error of the Mean (SEM)
+    mean_value = statistics.mean(fitness_reached)
+    std_dev = statistics.stdev(fitness_reached)
+    n = len(fitness_reached)
+    
+    fitness_reached_SEM = std_dev / math.sqrt(n)
+
     # write results to file
-    if map == 4:
+    if config['map_size'] == 4:
         with open('map_4_by_4.txt', 'w') as file:
-            for item in best_overall:
-                file.write("%s\n" % str(item))
-        with open('map_4_by_4_average.txt', 'w') as file:
-            for item in average_overall:
-                file.write("%s\n" % str(item))
-                
-    elif map == 8:
+            file.write("Average Fitness: %s\n" % average_fitness)
+            file.write("Average first generation to reach best fitness: %.2f +- %.2f\n" % (average_first_reached, fitness_reached_SEM))
+            file.write("Best Fitness: %s\n" % best_fitness)
+            file.write("Best Length: %s\n" % best_length)
+    elif config['map_size'] == 8:
         with open('map_8_by_8.txt', 'w') as file:
-            for item in best_overall:
-                file.write("%s\n" % str(item))
-        with open('map_8_by_8_average.txt', 'w') as file:
-            for item in average_overall:
-                file.write("%s\n" % str(item))
-                
+            file.write("Average Fitness: %s\n" % average_fitness)
+            file.write("Average first generation to reach best fitness: %.2f +- %.2f\n" % (average_first_reached, fitness_reached_SEM))
+            file.write("Best Fitness: %s\n" % best_fitness)
+            file.write("Best Length: %s\n" % best_length)
     else:
         with open('map_12_by_12.txt', 'w') as file:
-            for item in best_overall:
-                file.write("%s\n" % str(item))
-        with open('map_12_by_12_average.txt', 'w') as file:
-            for item in average_overall:
-                file.write("%s\n" % str(item))
+            file.write("Average Fitness: %s\n" % average_fitness)
+            file.write("Average first generation to reach best fitness: %.2f +- %.2f\n" % (average_first_reached, fitness_reached_SEM))
+            file.write("Best Fitness: %s\n" % best_fitness)
+            file.write("Best Length: %s\n" % best_length)
     

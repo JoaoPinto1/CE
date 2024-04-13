@@ -15,7 +15,6 @@ def evaluate(ind, config):
 # Simple Evolutionary Algorithm
 def ea(config):
     bests = []
-    average = []
     # Create a initial population randomly
     population = list(generate_initial_population(config))
     it = 0
@@ -25,11 +24,6 @@ def ea(config):
             if i['fitness'] == None:
                 evaluate(i, config)
         population.sort(key = lambda x: x['fitness'], reverse=config['maximization'])
-        
-        #sum all the fitnesses of the population
-        total_fitness = sum([i['fitness'] for i in population])
-        average.append(total_fitness/config['population_size'])
-        
         best = (config['mapping'](population[0]), population[0]['fitness'])
         #if config['interactive_plot'] is not None:
            #update_graph(it, best[1], *config['interactive_plot'])
@@ -52,7 +46,7 @@ def ea(config):
                 ni = run_env(config, ni['genotype'])
             new_population.append(ni)
         population = config['survivor_selection'](population, new_population)
-    return bests , average
+    return bests
 
 def run_env(config, genotype):
     steps = []
