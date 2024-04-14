@@ -9,6 +9,21 @@ from visuals import create_interactive_plot
 from evolutionary_algorithm import *
 
 
+def write_to_file(file_name , config):
+    with open(file_name, 'a') as file:
+        file.write("#######################################################\n\n")
+        file.write("Prob. Crossover: %s\n" % config['prob_crossover'])
+        file.write("Prob. Mutation: %s\n" % config['prob_mutation'])
+        file.write("Population Size: %s\n" % config['population_size'])
+        file.write("Generations: %s\n" % config['generations'])
+        file.write("Mutation: " + config['mutation'].__name__ + "\n")
+        file.write("Crossover: " + config['crossover'].__name__ + "\n")
+        file.write("Average Fitness: %.2f\n" % average_fitness)
+        file.write("Average first generation to reach best fitness: %.2f +- %.2f\n" % (average_first_reached, fitness_reached_SEM))
+        file.write("Best Fitness: %s\n" % best_fitness)
+        file.write("Best Length: %s\n\n" % best_length)
+        file.write("#######################################################\n\n")
+
 def function_fitness(config):
     def fitness(individual):
         fitness = function_evaluation(config['mapping'](individual))
@@ -34,9 +49,9 @@ def function_evaluation(steps):
     fitness += len(steps)
 
     #if there are repeating positions
-    positions = [sublist[0] for sublist in steps]
-    if len(positions) != len(set(positions)):
-        fitness *= 10
+    #positions = [sublist[0] for sublist in steps]
+    #if len(positions) != len(set(positions)):
+    #   fitness *= 10
 
     return fitness
 
@@ -131,21 +146,9 @@ if __name__ == '__main__':
 
     # write results to file
     if config['map_size'] == 4:
-        with open('map_4_by_4.txt', 'w') as file:
-            file.write("Average Fitness: %s\n" % average_fitness)
-            file.write("Average first generation to reach best fitness: %.2f +- %.2f\n" % (average_first_reached, fitness_reached_SEM))
-            file.write("Best Fitness: %s\n" % best_fitness)
-            file.write("Best Length: %s\n" % best_length)
+        write_to_file('map_4_by_4.txt', config)
     elif config['map_size'] == 8:
-        with open('map_8_by_8.txt', 'w') as file:
-            file.write("Average Fitness: %s\n" % average_fitness)
-            file.write("Average first generation to reach best fitness: %.2f +- %.2f\n" % (average_first_reached, fitness_reached_SEM))
-            file.write("Best Fitness: %s\n" % best_fitness)
-            file.write("Best Length: %s\n" % best_length)
+        write_to_file('map_8_by_8.txt', config)
     else:
-        with open('map_12_by_12.txt', 'w') as file:
-            file.write("Average Fitness: %s\n" % average_fitness)
-            file.write("Average first generation to reach best fitness: %.2f +- %.2f\n" % (average_first_reached, fitness_reached_SEM))
-            file.write("Best Fitness: %s\n" % best_fitness)
-            file.write("Best Length: %s\n" % best_length)
+        write_to_file('map_12_by_12.txt', config)
     
