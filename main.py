@@ -59,7 +59,7 @@ def function_evaluation(steps):
     positions = [sublist[0] for sublist in steps]
     positions.append(0) #initial position
     if len(positions) != len(set(positions)):
-       fitness -= 100000 * (len(positions) - len(set(positions)))
+       fitness -= 1000 * (len(positions) - len(set(positions)))
 
 
     return fitness
@@ -83,18 +83,18 @@ if __name__ == '__main__':
     config = {
         'map_size' : 12,
         'runs' : 3,
-        'population_size' : 100,
+        'population_size' : 150,
         'generations' : 200,
-        'prob_crossover' : 0.7,
+        'prob_crossover' : 0.9,
         'prob_mutation' : 0.2,
-        'seed' : 123, #int(sys.argv[1]),
+        'seed' : 2024, #int(sys.argv[1]),
         'generate_individual' : generate_random_individuals,
         'mapping' : mapping,
         'maximization' : True,
-        'mutation' : change_value_mutation, #TODO: implement mutation function,
+        'mutation' : main_mutation, #TODO: implement mutation function,
         'crossover' : one_point_crossover, #TODO: implement crossover function,
-        'parent_selection' : tournament(3, maximization=True),
-        'survivor_selection' : survivor_elitism(.01, maximization=True),
+        'parent_selection' : tournament(5, maximization=True),
+        'survivor_selection' : survivor_elitism(.02, maximization=True),
         'fitness_function' : None,
         'interactive_plot' : create_interactive_plot('Evolving...', 'Iteration', 'Quality', (0, 2000), (-2, 10)),
     }

@@ -10,10 +10,9 @@ def no_crossover(parent1, parent2):
     return parent1
 
 def one_point_crossover(parent1, parent2):
-    """
-    One Point Crossover
-    """
     at = random.randint(1, len(parent1['genotype'])-2)
+    if at >= len(parent2['genotype'])-1:
+        at = len(parent2['genotype']) - 1
     genotype = parent1['genotype'][:at] + parent2['genotype'][at:]
 
     return {'genotype': genotype, 'fitness': None} 
@@ -117,12 +116,36 @@ def bit_flip_mutation(p):
     p['genotype'][at] ^= 1 
     return p
 
+def delete_mutation(p):
+    p['fitness'] = None
+    at = random.randint(0, len(p['genotype']) - 1)
+    p['genotype'].pop(at)
+    return p
+
 def change_value_mutation(p):
     p['fitness'] = None
     at = random.randint(0, len(p['genotype']) - 1)
     p['genotype'][at] = random.randint(0, 3) 
  
     return p
+
+def insert_mutation(p):
+    p['fitness'] = None
+    action = random.randint(0, 3)
+    at = random.randint(0, len(p['genotype']) - 1)
+    p['genotype'].insert(at, action)
+    return p
+
+def main_mutation(p):
+    op = random.randint(1, 3)
+    if op == 1:
+        p = delete_mutation(p)
+    elif op == 2:
+        p = change_value_mutation(p)
+    else:
+        p = insert_mutation(p)
+    return p
+
 
 ## Integers ##
 def append_mutation(genotype_size):
@@ -135,12 +158,6 @@ def append_mutation(genotype_size):
         p['genotype'].append(element)
         return p
     return mutation
-
-def delete_mutation(p):
-    p['fitness'] = None
-    at = random.randint(0, len(p['genotype']) - 1)
-    p['genotype'].pop(at)
-    return p
 
 
 def changing_value_mutation(neighborhood_size, genotype_size):
