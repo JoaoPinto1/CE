@@ -24,10 +24,10 @@ def ea(config):
             if i['fitness'] == None:
                 evaluate(i, config)
         population.sort(key = lambda x: x['fitness'], reverse=config['maximization'])
-        best = (config['mapping'](population[0]), population[0]['fitness'])
+        best = (config['mapping'](population[0]), population[0]['fitness'], len(population[0]['steps']))
         #if config['interactive_plot'] is not None:
            #update_graph(it, best[1], *config['interactive_plot'])
-        print("Gen:", it, best[0], best[1])
+        print("Gen:", it, best[0], best[1], best[2])
         bests.append(best)
         new_population = []
         while len(new_population) < config['population_size']:
@@ -40,6 +40,7 @@ def ea(config):
                 ni = run_env(config, ni['genotype'])
             else:
                 ni = config['parent_selection'](population)
+                ni = run_env(config, ni['genotype'])
             #Mutation 
             if random.random() < config['prob_mutation']:
                 ni = config['mutation'](ni)
@@ -56,6 +57,6 @@ def run_env(config, genotype):
         observation, reward, terminated, truncated, info = config['env'].step(action)
         steps.append([observation, terminated, reward])
         if terminated:
-            genotype = genotype[:step + 1]
+            #genotype = genotype[:step + 1]
             break
     return {'genotype': genotype, 'steps': steps, 'fitness': None}

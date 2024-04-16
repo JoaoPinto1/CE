@@ -13,14 +13,9 @@ def one_point_crossover(parent1, parent2):
     """
     One Point Crossover
     """
-    at = random.randint(0, len(parent1['genotype'])-1)
-    genotype = []
-    for i in range(len(parent2['genotype'])):
-        if i < at:
-            genotype.append(parent1['genotype'][i])
-        else:
-            genotype.append(parent2['genotype'][i])
-            
+    at = random.randint(1, len(parent1['genotype'])-2)
+    genotype = parent1['genotype'][:at] + parent2['genotype'][at:]
+
     return {'genotype': genotype, 'fitness': None} 
 
 

@@ -1,11 +1,9 @@
 import random
 import copy
 
-
 ## Parent Selection ##
-def tournament(tournament_size : int, maximization=False) -> dict:
+def tournament(tournament_size : int, maximization=True) -> dict:
     def tournament(population):
-
         pool = random.sample(population, tournament_size)
         pool.sort(key=lambda i: i['fitness'], reverse=maximization)
         return copy.deepcopy(pool[0])
@@ -13,7 +11,7 @@ def tournament(tournament_size : int, maximization=False) -> dict:
 
 
 ## Survivals Selection ##
-def survivor_elitism(elite : float, maximization=False):
+def survivor_elitism(elite : float, maximization=True):
     def elitism(parents,offspring):
         pop_size = len(parents)
         elite_size = int(pop_size * elite)
