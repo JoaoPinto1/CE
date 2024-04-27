@@ -57,6 +57,6 @@ def run_env(config, genotype):
         observation, reward, terminated, truncated, info = config['env'].step(action)
         steps.append([observation, terminated, reward])
         if terminated:
-            #genotype = genotype[:step + 1]
+            genotype = genotype[:step+1]
             break
     return {'genotype': genotype, 'steps': steps, 'fitness': None}

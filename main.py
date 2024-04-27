@@ -26,7 +26,7 @@ def write_to_file(file_name , config):
 
 def function_fitness(config):
     def fitness(individual):
-        fitness = function_evaluation(config['mapping'](individual))
+        fitness = simple_fitness(config['mapping'](individual))
         return fitness
     return fitness
 
@@ -44,14 +44,14 @@ def function_evaluation(steps):
         fitness -= 1000000
 
     #Manhattan distance to the goal
-    fitness += 1000/(1+ abs(map-1)-row + abs(map-1)-col)
+    fitness += 10000/(1+ abs(map-1)-row + abs(map-1)-col)
     
     #if the last step is a hole or didn't finish
     if (steps[-1][1] and not steps[-1][2]) or not steps[-1][1]:
         fitness -= 100000
 
-    if steps[-1][0] == map*map - 1:
-        fitness += 10000
+    if steps[-1][2]:
+        fitness += 100000
 
     fitness += 10000/(1+len(steps))
 
@@ -59,10 +59,22 @@ def function_evaluation(steps):
     positions = [sublist[0] for sublist in steps]
     positions.append(0) #initial position
     if len(positions) != len(set(positions)):
-       fitness -= 1000 * (len(positions) - len(set(positions)))
-
-
+       fitness -= 10000 * (len(positions) - len(set(positions)))
     return fitness
+
+def simple_fitness(steps):
+
+    map = config['map_size']
+    row = math.floor(steps[-1][0] / map)
+    col = steps[-1][0] % map
+    dist_to_goal = abs(map-1)-row + abs(map-1)-col
+
+    positions = [sublist[0] for sublist in steps]
+    positions.append(0) #initial position
+
+    min_steps = 2*(map-1)
+
+    return dist_to_goal**2 + len(steps) + (not steps[-1][1] or (steps[-1][1] and not steps[-1][2])) * map + (len(positions) - len(set(positions)))**2  #+ ((len(steps) < min_steps)*(len(steps)-min_steps))**2
 
 def mapping(genotype):
     return genotype['steps']
@@ -84,44 +96,40 @@ if __name__ == '__main__':
         'map_size' : 12,
         'runs' : 3,
         'population_size' : 150,
-        'generations' : 200,
-        'prob_crossover' : 0.9,
-        'prob_mutation' : 0.2,
-        'seed' : 2024, #int(sys.argv[1]),
+        'generations' : 50,
+        'prob_crossover' : 0.8,
+        'prob_mutation' : 0.05,
+        'seed' : 204, #int(sys.argv[1]),
         'generate_individual' : generate_random_individuals,
         'mapping' : mapping,
-        'maximization' : True,
+        'maximization' : False,
         'mutation' : main_mutation, #TODO: implement mutation function,
-        'crossover' : one_point_crossover, #TODO: implement crossover function,
-        'parent_selection' : tournament(5, maximization=True),
-        'survivor_selection' : survivor_elitism(.02, maximization=True),
+        'crossover' : sample_crossover, #TODO: implement crossover function,
+        'parent_selection' : tournament(5, maximization=False),
+        'survivor_selection' : survivor_elitism(.02, maximization=False),
         'fitness_function' : None,
         'interactive_plot' : create_interactive_plot('Evolving...', 'Iteration', 'Quality', (0, 2000), (-2, 10)),
     }
-
+    
     if config['map_size'] == 4:
         config['env'] = gym.make('FrozenLake-v1', desc=map_4_by_4, is_slippery=False)
-        config['genotype_size'] = MAX_ITERATIONS_4_by_4
 
     elif config['map_size'] == 8:
         config['env'] = gym.make('FrozenLake-v1', desc=map_8_by_8, is_slippery=False)
-        config['genotype_size'] = MAX_ITERATIONS_8_by_8
 
     else:
         config['env'] = gym.make('FrozenLake-v1', desc=map_12_by_12, is_slippery=False)
-        config['genotype_size'] = MAX_ITERATIONS_12_by_12
     
     config['fitness_function'] = function_fitness(config)
     
     best_overall = []
     average_overall = []
     total_fitness = 0
-    best_fitness = 999999999
-    first_min_index = 0
+    first_max_index = 0
     fitness_reached = []
 
     for i in range(config['runs']):
-
+        best_fitness = -999999999999
         random.seed(config['seed'])
         observation, info = config['env'].reset(seed=config['seed'])
         best = ea(config)
@@ -133,24 +141,23 @@ if __name__ == '__main__':
             total_fitness += value_at_i  # Add the value to the total
             
             # Compare the value with the current minimum
-            if value_at_i < best_fitness:
+            if value_at_i > best_fitness:
                 best_fitness = value_at_i
-                first_min_index = i
+                first_max_index = i
 
-        fitness_reached.append(first_min_index)
+        fitness_reached.append(first_max_index)
         
         if best_overall == []:
             best_overall = best
             
-        elif best_overall[-1][1] > best[-1][1]:
+        elif best_overall[-1][1] < best[-1][1]:
             best_overall = best  
     
     average_first_reached = sum(fitness_reached) / len(fitness_reached)
     average_fitness = total_fitness / (config['runs'] * config['generations'])
     best_fitness = best_overall[-1][1]
     best_length = len(best_overall[-1][0])
-    
-    
+
     # Calculate Standard Error of the Mean (SEM)
     mean_value = statistics.mean(fitness_reached)
     std_dev = statistics.stdev(fitness_reached)

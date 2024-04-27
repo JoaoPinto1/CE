@@ -10,7 +10,7 @@ def no_crossover(parent1, parent2):
     return parent1
 
 def one_point_crossover(parent1, parent2):
-    at = random.randint(1, len(parent1['genotype'])-2)
+    at = random.randint(1, len(parent1['genotype'])-1)
     if at >= len(parent2['genotype'])-1:
         at = len(parent2['genotype']) - 1
     genotype = parent1['genotype'][:at] + parent2['genotype'][at:]
@@ -45,9 +45,9 @@ def uniform_crossover(parent1, parent2):
 def sample_crossover(parent1, parent2):
     size_1 = len(parent1['genotype'])
     size_2 = len(parent2['genotype'])    
-    pos_1 = random.randint(0, size_1 - 1)
-    pos_2 = random.randint(0, size_2 - 1)
-    genotype = list(set(random.sample(parent1['genotype'], pos_1) + random.sample(parent2['genotype'], (size_2 - pos_2))))
+    pos_1 = random.randint(1, size_1 - 1)
+    pos_2 = random.randint(1, size_2 - 1)
+    genotype = parent1['genotype'][:pos_1] + parent2['genotype'][pos_2:]
     return {'genotype': genotype, 'fitness': None}
 
 ## Float ##
