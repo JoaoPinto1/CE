@@ -217,7 +217,7 @@ if __name__ == '__main__':
                 config['crossover'] = two_point_crossover
             
             for i in range(config['runs']):
-                best_fitness = -999999999999
+                best_fitness = 999999999999
                 random.seed(config['seed'])
                 observation, info = config['env'].reset(seed=config['seed'])
                 best = ea(config)
