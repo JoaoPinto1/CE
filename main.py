@@ -99,7 +99,7 @@ if __name__ == '__main__':
         'generations' : 50,
         'prob_crossover' : 0.8,
         'prob_mutation' : 0.05,
-        'seed' : 204, #int(sys.argv[1]),
+        'seed' : 1234, #int(sys.argv[1]),
         'generate_individual' : generate_random_individuals,
         'mapping' : mapping,
         'maximization' : False,
@@ -128,47 +128,135 @@ if __name__ == '__main__':
     first_max_index = 0
     fitness_reached = []
 
-    for i in range(config['runs']):
-        best_fitness = -999999999999
-        random.seed(config['seed'])
-        observation, info = config['env'].reset(seed=config['seed'])
-        best = ea(config)
-        config['seed'] += 1
 
-        # Calculate the average fitness , the first time the fitness is reached
-        for i, item in enumerate(best):
-            value_at_i = item[1]  
-            total_fitness += value_at_i  # Add the value to the total
+    for map in range(3):
+        config['map_size'] = 4 + map * 4
+        if config['map_size'] == 4:
+            config['env'] = gym.make('FrozenLake-v1', desc=map_4_by_4, is_slippery=False)
+
+        elif config['map_size'] == 8:
+            config['env'] = gym.make('FrozenLake-v1', desc=map_8_by_8, is_slippery=False)
+
+        else:
+            config['env'] = gym.make('FrozenLake-v1', desc=map_12_by_12, is_slippery=False)
+
+        for k in range(12):
+            config['seed'] = 1234
+
+            if k == 0:
+                config['population_size'] = 150
+                config['prob_mutation'] = 0.05
+                config['prob_crossover'] = 0.8
+                config['mutation'] = main_mutation
+                config['crossover'] = sample_crossover
+            if k == 1:
+                config['population_size'] = 100
+                config['prob_mutation'] = 0.05
+                config['prob_crossover'] = 0.8
+                config['mutation'] = main_mutation
+                config['crossover'] = sample_crossover
+            if k == 2:
+                config['population_size'] = 50
+                config['prob_mutation'] = 0.05
+                config['prob_crossover'] = 0.8
+                config['mutation'] = main_mutation
+                config['crossover'] = sample_crossover
+            if k == 3:
+                config['population_size'] = 150
+                config['prob_mutation'] = 0.1
+                config['prob_crossover'] = 0.8
+                config['mutation'] = main_mutation
+                config['crossover'] = sample_crossover
+            if k == 4:
+                config['population_size'] = 150
+                config['prob_mutation'] = 0.075
+                config['prob_crossover'] = 0.8
+                config['mutation'] = main_mutation
+                config['crossover'] = sample_crossover
+            if k == 5:
+                config['population_size'] = 150
+                config['prob_mutation'] = 0.05
+                config['prob_crossover'] = 0.7
+                config['mutation'] = main_mutation
+                config['crossover'] = sample_crossover
+            if k == 6:
+                config['population_size'] = 150
+                config['prob_mutation'] = 0.05
+                config['prob_crossover'] = 0.9
+                config['mutation'] = main_mutation
+                config['crossover'] = sample_crossover
+            if k == 7:
+                config['population_size'] = 150
+                config['prob_mutation'] = 0.05
+                config['prob_crossover'] = 0.8
+                config['mutation'] = delete_mutation
+                config['crossover'] = sample_crossover
+            if k == 8:
+                config['population_size'] = 150
+                config['prob_mutation'] = 0.05
+                config['prob_crossover'] = 0.8
+                config['mutation'] = insert_mutation
+                config['crossover'] = sample_crossover
+            if k == 9:
+                config['population_size'] = 150
+                config['prob_mutation'] = 0.05
+                config['prob_crossover'] = 0.8
+                config['mutation'] = change_value_mutation
+                config['crossover'] = sample_crossover
+            if k == 10:
+                config['population_size'] = 150
+                config['prob_mutation'] = 0.05
+                config['prob_crossover'] = 0.8
+                config['mutation'] = main_mutation
+                config['crossover'] = one_point_crossover
+            if k == 11:
+                config['population_size'] = 150
+                config['prob_mutation'] = 0.05
+                config['prob_crossover'] = 0.8
+                config['mutation'] = main_mutation
+                config['crossover'] = two_point_crossover
             
-            # Compare the value with the current minimum
-            if value_at_i > best_fitness:
-                best_fitness = value_at_i
-                first_max_index = i
+            for i in range(config['runs']):
+                best_fitness = -999999999999
+                random.seed(config['seed'])
+                observation, info = config['env'].reset(seed=config['seed'])
+                best = ea(config)
+                config['seed'] += 1
 
-        fitness_reached.append(first_max_index)
-        
-        if best_overall == []:
-            best_overall = best
+                # Calculate the average fitness , the first time the fitness is reached
+                for i, item in enumerate(best):
+                    value_at_i = item[1]  
+                    total_fitness += value_at_i  # Add the value to the total
+                    
+                    # Compare the value with the current minimum
+                    if value_at_i < best_fitness:
+                        best_fitness = value_at_i
+                        first_max_index = i
+
+                fitness_reached.append(first_max_index)
+                
+                if best_overall == []:
+                    best_overall = best
+                    
+                elif best_overall[-1][1] > best[-1][1]:
+                    best_overall = best  
             
-        elif best_overall[-1][1] < best[-1][1]:
-            best_overall = best  
-    
-    average_first_reached = sum(fitness_reached) / len(fitness_reached)
-    average_fitness = total_fitness / (config['runs'] * config['generations'])
-    best_fitness = best_overall[-1][1]
-    best_length = len(best_overall[-1][0])
+            average_first_reached = sum(fitness_reached) / len(fitness_reached)
+            average_fitness = total_fitness / (config['runs'] * config['generations'])
+            best_fitness = best_overall[-1][1]
+            best_length = len(best_overall[-1][0])
 
-    # Calculate Standard Error of the Mean (SEM)
-    mean_value = statistics.mean(fitness_reached)
-    std_dev = statistics.stdev(fitness_reached)
-    n = len(fitness_reached)
-    
-    fitness_reached_SEM = std_dev / math.sqrt(n)
+            # Calculate Standard Error of the Mean (SEM)
+            mean_value = statistics.mean(fitness_reached)
+            std_dev = statistics.stdev(fitness_reached)
+            n = len(fitness_reached)
+            
+            fitness_reached_SEM = std_dev / math.sqrt(n)
 
-    # write results to file
-    if config['map_size'] == 4:
-        write_to_file('map_4_by_4.txt', config)
-    elif config['map_size'] == 8:
-        write_to_file('map_8_by_8.txt', config)
-    else:
-        write_to_file('map_12_by_12.txt', config)
+            # write results to file
+            if config['map_size'] == 4:
+                write_to_file('map_4_by_4.txt', config)
+            elif config['map_size'] == 8:
+                write_to_file('map_8_by_8.txt', config)
+            else:
+                write_to_file('map_12_by_12.txt', config)

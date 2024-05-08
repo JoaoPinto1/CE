@@ -538,3 +538,213 @@ Best Length: 22
 
 #######################################################
 
+#######################################################
+
+Prob. Crossover: 0.8
+Prob. Mutation: 0.05
+Population Size: 150
+Generations: 50
+Mutation: main_mutation
+Crossover: sample_crossover
+Average Fitness: 36.80
+Average first generation to reach best fitness: 0.00 +- 0.00
+Best Fitness: 22
+Best Length: 22
+
+#######################################################
+
+#######################################################
+
+Prob. Crossover: 0.8
+Prob. Mutation: 0.05
+Population Size: 150
+Generations: 50
+Mutation: main_mutation
+Crossover: sample_crossover
+Average Fitness: 38.72
+Average first generation to reach best fitness: 0.00 +- 0.00
+Best Fitness: 22
+Best Length: 22
+
+#######################################################
+
+#######################################################
+
+Prob. Crossover: 0.8
+Prob. Mutation: 0.05
+Population Size: 150
+Generations: 50
+Mutation: main_mutation
+Crossover: sample_crossover
+Average Fitness: 328.16
+Average first generation to reach best fitness: 0.00 +- 0.00
+Best Fitness: 6
+Best Length: 6
+
+#######################################################
+
+#######################################################
+
+Prob. Crossover: 0.8
+Prob. Mutation: 0.05
+Population Size: 100
+Generations: 50
+Mutation: main_mutation
+Crossover: sample_crossover
+Average Fitness: 367.39
+Average first generation to reach best fitness: 0.00 +- 0.00
+Best Fitness: 6
+Best Length: 6
+
+#######################################################
+
+#######################################################
+
+Prob. Crossover: 0.8
+Prob. Mutation: 0.05
+Population Size: 50
+Generations: 50
+Mutation: main_mutation
+Crossover: sample_crossover
+Average Fitness: 424.72
+Average first generation to reach best fitness: 0.00 +- 0.00
+Best Fitness: 6
+Best Length: 6
+
+#######################################################
+
+#######################################################
+
+Prob. Crossover: 0.8
+Prob. Mutation: 0.1
+Population Size: 150
+Generations: 50
+Mutation: main_mutation
+Crossover: sample_crossover
+Average Fitness: 460.07
+Average first generation to reach best fitness: 0.00 +- 0.00
+Best Fitness: 6
+Best Length: 6
+
+#######################################################
+
+#######################################################
+
+Prob. Crossover: 0.8
+Prob. Mutation: 0.075
+Population Size: 150
+Generations: 50
+Mutation: main_mutation
+Crossover: sample_crossover
+Average Fitness: 495.99
+Average first generation to reach best fitness: 0.00 +- 0.00
+Best Fitness: 6
+Best Length: 6
+
+#######################################################
+
+#######################################################
+
+Prob. Crossover: 0.7
+Prob. Mutation: 0.05
+Population Size: 150
+Generations: 50
+Mutation: main_mutation
+Crossover: sample_crossover
+Average Fitness: 532.01
+Average first generation to reach best fitness: 0.00 +- 0.00
+Best Fitness: 6
+Best Length: 6
+
+#######################################################
+
+#######################################################
+
+Prob. Crossover: 0.9
+Prob. Mutation: 0.05
+Population Size: 150
+Generations: 50
+Mutation: main_mutation
+Crossover: sample_crossover
+Average Fitness: 568.09
+Average first generation to reach best fitness: 0.00 +- 0.00
+Best Fitness: 6
+Best Length: 6
+
+#######################################################
+
+#######################################################
+
+Prob. Crossover: 0.8
+Prob. Mutation: 0.05
+Population Size: 150
+Generations: 50
+Mutation: delete_mutation
+Crossover: sample_crossover
+Average Fitness: 603.27
+Average first generation to reach best fitness: 0.00 +- 0.00
+Best Fitness: 6
+Best Length: 6
+
+#######################################################
+
+#######################################################
+
+Prob. Crossover: 0.8
+Prob. Mutation: 0.05
+Population Size: 150
+Generations: 50
+Mutation: insert_mutation
+Crossover: sample_crossover
+Average Fitness: 639.23
+Average first generation to reach best fitness: 0.00 +- 0.00
+Best Fitness: 6
+Best Length: 6
+
+#######################################################
+
+#######################################################
+
+Prob. Crossover: 0.8
+Prob. Mutation: 0.05
+Population Size: 150
+Generations: 50
+Mutation: change_value_mutation
+Crossover: sample_crossover
+Average Fitness: 674.22
+Average first generation to reach best fitness: 0.00 +- 0.00
+Best Fitness: 6
+Best Length: 6
+
+#######################################################
+
+#######################################################
+
+Prob. Crossover: 0.8
+Prob. Mutation: 0.05
+Population Size: 150
+Generations: 50
+Mutation: main_mutation
+Crossover: one_point_crossover
+Average Fitness: 756.71
+Average first generation to reach best fitness: 0.00 +- 0.00
+Best Fitness: 6
+Best Length: 6
+
+#######################################################
+
+#######################################################
+
+Prob. Crossover: 0.8
+Prob. Mutation: 0.05
+Population Size: 150
+Generations: 50
+Mutation: main_mutation
+Crossover: two_point_crossover
+Average Fitness: 844.27
+Average first generation to reach best fitness: 0.00 +- 0.00
+Best Fitness: 6
+Best Length: 6
+
+#######################################################
+
