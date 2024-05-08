@@ -5,9 +5,70 @@ import random
 from maps_to_evaluate import *
 from variation_operators import *
 from selection import tournament, survivor_elitism, survivor_generational
-from visuals import create_interactive_plot
+from visuals import create_interactive_plot, histogarm
 from evolutionary_algorithm import *
+from scipy import stats
+import matplotlib.pyplot as plt 
+import numpy as np
+    
 
+def get_data(pop1 , pmut1 , pcross1 , mut1 , cross1, pop2 , pmut2 , pcross2 , mut2 , cross2):
+    
+    config['population_size'] = pop1
+    config['prob_mutation'] = pmut1
+    config['prob_crossover'] = pcross1
+    config['mutation'] = mut1
+    config['crossover'] = cross1
+    
+    runs = 5
+    
+    data1 = []
+    data2 = []
+    
+    for i in range(runs):
+        total_fitness = 0
+        observation, info = config['env'].reset(seed=config['seed'])
+        best = ea(config)
+        config['seed'] += 1
+
+        for i, item in enumerate(best):
+            value_at_i = item[1]  
+            total_fitness += value_at_i 
+
+        data1.append(total_fitness / config['generations'])
+
+    config['population_size'] = pop2
+    config['prob_mutation'] = pmut2
+    config['prob_crossover'] = pcross2
+    config['mutation'] = mut2
+    config['crossover'] = cross2
+    
+    for i in range(runs):
+        total_fitness = 0
+        observation, info = config['env'].reset(seed=config['seed'])
+        best = ea(config)
+        config['seed'] += 1
+
+        for i, item in enumerate(best):
+            value_at_i = item[1]  
+            total_fitness += value_at_i 
+
+        data2.append(total_fitness / config['generations'])
+
+    ttest(data1,data2)
+    
+
+def ttest(previous_avg_fitness , current_avg_fitness, eq_var = True):
+    
+    # Perform t-test for average fitness
+    avg_t_stat, avg_p_value = stats.ttest_ind(previous_avg_fitness, current_avg_fitness , equal_var=eq_var)
+
+    # Interpret results
+    alpha = 0.05
+    if avg_p_value < alpha:
+        print("There is a statistically significant difference in average fitness compared to previous runs.")
+    else:
+        print("There is no statistically significant difference in average fitness compared to previous runs.")
 
 def write_to_file(file_name , config):
     with open(file_name, 'a') as file:
@@ -122,14 +183,16 @@ if __name__ == '__main__':
     
     config['fitness_function'] = function_fitness(config)
     
-    best_overall = []
-    average_overall = []
-    total_fitness = 0
-    first_max_index = 0
-    fitness_reached = []
-
+    #get_data(150 , 0.05, 0.8 , main_mutation ,sample_crossover ,100 , 0.05, 0.8 , main_mutation ,sample_crossover)
 
     for map in range(3):
+        2
+        best_overall = []
+        average_overall = []
+        total_fitness = 0
+        first_max_index = 0
+        fitness_reached = []
+        
         config['map_size'] = 4 + map * 4
         if config['map_size'] == 4:
             config['env'] = gym.make('FrozenLake-v1', desc=map_4_by_4, is_slippery=False)
