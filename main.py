@@ -55,8 +55,25 @@ def get_data(pop1 , pmut1 , pcross1 , mut1 , cross1, pop2 , pmut2 , pcross2 , mu
 
         data2.append(total_fitness / config['generations'])
 
-    ttest(data1,data2)
+    normal1 = test_normal_ks(data1)
+    normal2 = test_normal_ks(data2)
     
+    if(normal1 and normal2):
+        ttest(data1,data2)
+
+
+def test_normal_ks(data):
+    """Kolgomorov-Smirnov"""
+    norm_data = (data - np.mean(data))/(np.std(data)/np.sqrt(len(data)))
+    D, p_value = stats.kstest(norm_data, 'norm')
+    
+    if p_value > 0.05:
+        print("Data is likely normally distributed (fail to reject null hypothesis)")
+        return True
+    else:
+        print("Data is not likely normally distributed (reject null hypothesis)")
+        return False
+
 
 def ttest(previous_avg_fitness , current_avg_fitness, eq_var = True):
     
@@ -69,6 +86,7 @@ def ttest(previous_avg_fitness , current_avg_fitness, eq_var = True):
         print("There is a statistically significant difference in average fitness compared to previous runs.")
     else:
         print("There is no statistically significant difference in average fitness compared to previous runs.")
+
 
 def write_to_file(file_name , config):
     with open(file_name, 'a') as file:
@@ -183,9 +201,9 @@ if __name__ == '__main__':
     
     config['fitness_function'] = function_fitness(config)
     
-    #get_data(150 , 0.05, 0.8 , main_mutation ,sample_crossover ,100 , 0.05, 0.8 , main_mutation ,sample_crossover)
+    get_data(150 , 0.05, 0.8 , main_mutation ,sample_crossover ,100 , 0.05, 0.8 , main_mutation ,sample_crossover)
 
-    for map in range(3):
+    for map in range(0):
         2
         best_overall = []
         average_overall = []
