@@ -19,9 +19,6 @@ def one_point_crossover(parent1, parent2):
 
 
 def two_point_crossover(parent1, parent2):
-    """
-    Two Point Crossover
-    """
     cut_points = sorted(random.sample(range(len(parent1['genotype'])), 2))
     genotype = parent1['genotype'][ 0 : cut_points[0] ] +  parent2['genotype'][ cut_points[0] : cut_points[1]] + parent1['genotype'][ cut_points[1] : ] 
     return {'genotype': genotype, 'fitness': None}
@@ -145,7 +142,7 @@ def main_mutation(p):
     else:
         p = insert_mutation(p)
     return p
-
+    
 
 ## Integers ##
 def append_mutation(genotype_size):
