@@ -20,7 +20,7 @@ def get_data(pop1 , pmut1 , pcross1 , mut1 , cross1, pop2 , pmut2 , pcross2 , mu
     config['mutation'] = mut1
     config['crossover'] = cross1
     
-    runs = 5
+    runs = 30
     
     data1 = []
     data2 = []
@@ -58,9 +58,49 @@ def get_data(pop1 , pmut1 , pcross1 , mut1 , cross1, pop2 , pmut2 , pcross2 , mu
     normal1 = test_normal_ks(data1)
     normal2 = test_normal_ks(data2)
     
+    average1 = sum(data1) / len(data1)
+    average2 = sum(data2) / len(data2)
+    
     if(normal1 and normal2):
-        ttest(data1,data2)
+        if(ttest(data1,data2)):
+            write_stats_file(pcross1 , pmut1 , pop1 ,mut1 , cross1 , average1 ,pcross2 , pmut2 , pop2 ,mut2 , cross2 , average2 )
+            with open("statistics.txt", 'a') as file:
+                file.write("There is a statistically significant difference in average fitness compared to previous runs.\n")
+                file.write("#######################################################\n\n")
+        else:
+            write_stats_file(pcross1 , pmut1 , pop1 ,mut1 , cross1 , average1 ,pcross2 , pmut2 , pop2 ,mut2 , cross2 , average2 )
+            with open("statistics.txt", 'a') as file:
+                file.write("There is no statistically significant difference in average fitness compared to previous runs.\n")
+                file.write("#######################################################\n\n")
+    else:
+        if(mann_whitney(data1,data2)):
+            write_stats_file(pcross1 , pmut1 , pop1 ,mut1 , cross1 , average1 ,pcross2 , pmut2 , pop2 ,mut2 , cross2 , average2 )
+            with open("statistics.txt", 'a') as file:
+                file.write("There is a statistically significant difference in average fitness compared to previous runs.\n")
+                file.write("#######################################################\n\n")
+        else:
+            write_stats_file(pcross1 , pmut1 , pop1 ,mut1 , cross1 , average1 ,pcross2 , pmut2 , pop2 ,mut2 , cross2 , average2 )
+            with open("statistics.txt", 'a') as file:
+                file.write("There is no statistically significant difference in average fitness compared to previous runs.\n")
+                file.write("#######################################################\n\n")
 
+
+def write_stats_file(pcross1 , pmut1 , pop1 ,mut1 , cross1 , average1 ,pcross2 , pmut2 , pop2 ,mut2 , cross2 , average2 ):
+    with open("statistics.txt", 'a') as file:
+        file.write("#######################################################\n\n")
+        file.write("Prob. Crossover: %s\n" % pcross1)
+        file.write("Prob. Mutation: %s\n" % pmut1)
+        file.write("Population Size: %s\n" % pop1)
+        file.write("Mutation: " + mut1.__name__ + "\n")
+        file.write("Crossover: " + cross1.__name__ + "\n")
+        file.write("Average obtained: %s\n" % average1)
+        file.write("-------------------------------------------------------\n\n")
+        file.write("Prob. Crossover: %s\n" % pcross2)
+        file.write("Prob. Mutation: %s\n" % pmut2)
+        file.write("Population Size: %s\n" % pop2)
+        file.write("Mutation: " + mut2.__name__ + "\n")
+        file.write("Crossover: " + cross2.__name__ + "\n")
+        file.write("Average obtained: %s\n" % average2)
 
 def test_normal_ks(data):
     """Kolgomorov-Smirnov"""
@@ -75,6 +115,22 @@ def test_normal_ks(data):
         return False
 
 
+def mann_whitney(data1, data2):
+    """
+    Non-parametric
+    Two samples
+    Independent
+    """    
+    U_statistic, p_value = stats.mannwhitneyu(data1, data2)
+    
+    if p_value < 0.05:
+        print("There is a statistically significant difference between the two samples.")
+        return True
+    else:
+        print("There is no statistically significant difference between the two samples.")
+        return False
+        
+
 def ttest(previous_avg_fitness , current_avg_fitness, eq_var = True):
     
     # Perform t-test for average fitness
@@ -84,8 +140,10 @@ def ttest(previous_avg_fitness , current_avg_fitness, eq_var = True):
     alpha = 0.05
     if avg_p_value < alpha:
         print("There is a statistically significant difference in average fitness compared to previous runs.")
+        return True
     else:
         print("There is no statistically significant difference in average fitness compared to previous runs.")
+        return False
 
 
 def write_to_file(file_name , config):
@@ -201,10 +259,10 @@ if __name__ == '__main__':
     
     config['fitness_function'] = function_fitness(config)
     
-    get_data(150 , 0.05, 0.8 , main_mutation ,sample_crossover ,100 , 0.05, 0.8 , main_mutation ,sample_crossover)
+    get_data(150 , 0.05, 0.8 , main_mutation ,sample_crossover ,150 , 0.05, 0.8 , main_mutation ,one_point_crossover)
 
     for map in range(0):
-        2
+        
         best_overall = []
         average_overall = []
         total_fitness = 0
