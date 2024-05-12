@@ -12,18 +12,36 @@ import matplotlib.pyplot as plt
 import numpy as np
 from itertools import product
 
-def get_data(data1, data2, average1, pop1 , pmut1 , pcross1 , mut1 , cross1, elitism1, average_first_reached):
-    test = ttest(data1,data2)
-    write_stats_file(pcross1 , pmut1 , pop1 ,mut1 , cross1 , average1 , average_first_reached, elitism1)
-    with open("statistics.txt", 'a') as file:
-        if test:
-            file.write("There is a statistically significant difference in average fitness compared to previous runs.\n")
+def get_data(data1, data2, average1, pop1 , pmut1 , pcross1 , mut1 , cross1, elitism1, average_first_reached, finished):
+    normal1 = test_normal_ks(data1)
+    normal2 = test_normal_ks(data2)
+    print(data1)
+    print(data2)
+    if(normal1 and normal2):
+        if(ttest(data1,data2)):
+            write_stats_file(pcross1 , pmut1 , pop1 ,mut1 , cross1 , average1 , average_first_reached, elitism1, finished)
+            with open("statistics.txt", 'a') as file:
+                file.write("There is a statistically significant difference in average fitness compared to previous runs.\n")
+                file.write("#######################################################\n\n")
         else:
-            file.write("There is no statistically significant difference in average fitness compared to previous runs.\n")
-        file.write("#######################################################\n\n")
+            write_stats_file(pcross1 , pmut1 , pop1 ,mut1 , cross1 , average1 , average_first_reached, elitism1, finished)
+            with open("statistics.txt", 'a') as file:
+                file.write("There is no statistically significant difference in average fitness compared to previous runs.\n")
+                file.write("#######################################################\n\n")
+    else:
+        if(mann_whitney(data1,data2)):
+            write_stats_file(pcross1 , pmut1 , pop1 ,mut1 , cross1 , average1 , average_first_reached, elitism1, finished)
+            with open("statistics.txt", 'a') as file:
+                file.write("There is a statistically significant difference in average fitness compared to previous runs.\n")
+                file.write("#######################################################\n\n")
+        else:
+            write_stats_file(pcross1 , pmut1 , pop1 ,mut1 , cross1 , average1 , average_first_reached, elitism1, finished)
+            with open("statistics.txt", 'a') as file:
+                file.write("There is no statistically significant difference in average fitness compared to previous runs.\n")
+                file.write("#######################################################\n\n")
 
 
-def write_stats_file(pcross1 , pmut1 , pop1 ,mut1 , cross1 , average1, average_first_reached, elitism1):
+def write_stats_file(pcross1 , pmut1 , pop1 ,mut1 , cross1 , average1, average_first_reached, elitism1, finished):
     with open("statistics.txt", 'a') as file:
         file.write("#######################################################\n\n")
         file.write("Prob. Crossover: %s\n" % pcross1)
@@ -34,6 +52,7 @@ def write_stats_file(pcross1 , pmut1 , pop1 ,mut1 , cross1 , average1, average_f
         file.write("Average obtained: %s\n" % average1)
         file.write("Average first reached: %s\n" % average_first_reached)
         file.write("Elitism: %s\n" % elitism1)
+        file.write("Finished: %s\n" % finished)
 
 def test_normal_ks(data):
     """Kolgomorov-Smirnov"""
@@ -156,8 +175,9 @@ def teste(config, pop_size, pmut, pcross, mut, cross, elitism):
         config['survivor_selection'] = survivor_elitism(.02, maximization=False)
     else:
         config['survivor_selection'] = survivor_generational
-    
+    finished = False
     print("Testing configuration: ", pop_size, pmut, pcross, mut.__name__, cross.__name__, elitism)
+    data2 = []
     for i in range(config['runs']):
         best_fitness = 999999999999 
         total_fitness = 0
@@ -174,16 +194,18 @@ def teste(config, pop_size, pmut, pcross, mut, cross, elitism):
                 best_fitness = value_at_i
                 first_max_index = a
         
+        if best_fitness == 22:
+            finished = True
         fitness_reached.append(first_max_index)
         average_first_reached = sum(fitness_reached) / len(fitness_reached)
 
-        data1.append(total_fitness / config['generations'])
+        data2.append(total_fitness / config['generations'])
         print("Run: ", i)
 
-    average_fitness = sum(data1) / len(data1)
+    average_fitness = sum(data2) / len(data2)
     config['seed'] = 1234
     print("Average fitness: ", average_fitness)
-    return [data1, average_fitness, pop_size, pmut, pcross, mut, cross, elitism, average_first_reached]
+    return [data2, average_fitness, pop_size, pmut, pcross, mut, cross, elitism, average_first_reached, finished]
 
 
 if __name__ == '__main__':
@@ -226,9 +248,7 @@ if __name__ == '__main__':
     elitism = [True , False]
 
     data1 = []
-    data2 = []
     fitness_reached = []
-    fitness_reached2 = []
     for i in range(config['runs']):
         best_fitness = 999999999999
         total_fitness = 0
@@ -256,15 +276,15 @@ if __name__ == '__main__':
     print("Average fitness: ", average1)
 
     testes = []
-    #testes.append(teste(config, 50, 0.05, 0.8, main_mutation, sample_crossover, True))
-    #testes.append(teste(config, 150, 0.05, 0.8, delete_mutation, sample_crossover, True))
+    testes.append(teste(config, 50, 0.05, 0.8, main_mutation, sample_crossover, True))
+    testes.append(teste(config, 150, 0.05, 0.8, delete_mutation, sample_crossover, True))
     testes.append(teste(config, 150, 0.1, 0.8, main_mutation, sample_crossover, True))
-    #testes.append(teste(config, 150, 0.05, 0.9, main_mutation, sample_crossover, True))
-    #testes.append(teste(config, 150, 0.05, 0.8, main_mutation, one_point_crossover, True))
+    testes.append(teste(config, 150, 0.05, 0.9, main_mutation, sample_crossover, True))
+    testes.append(teste(config, 150, 0.05, 0.8, main_mutation, one_point_crossover, True))
     testes.append(teste(config, 150, 0.05, 0.8, main_mutation, two_point_crossover, True))
-    #testes.append(teste(config, 150, 0.05, 0.8, main_mutation, sample_crossover, False))
-    #testes.append(teste(config, 100, 0.05, 0.8, main_mutation, sample_crossover, False))
-    #testes.append(teste(config, 150, 0.05, 0.8, insert_mutation, sample_crossover, True))
+    testes.append(teste(config, 150, 0.05, 0.8, main_mutation, sample_crossover, False))
+    testes.append(teste(config, 100, 0.05, 0.8, main_mutation, sample_crossover, False))
+    testes.append(teste(config, 150, 0.05, 0.8, insert_mutation, sample_crossover, True))
 
     for test in testes:
-        get_data(data1, test[0], test[1], test[2], test[3], test[4], test[5], test[6], test[7], test[8])
+        get_data(data1, test[0], test[1], test[2], test[3], test[4], test[5], test[6], test[7], test[8], test[9])
