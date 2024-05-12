@@ -1,0 +1,143 @@
+#######################################################
+
+Prob. Crossover: 0.8
+Prob. Mutation: 0.05
+Population Size: 50
+Mutation: main_mutation
+Crossover: sample_crossover
+Average obtained: 47.02666666666667
+Average first reached: 26.0
+Elitism: True
+There is no statistically significant difference in average fitness compared to previous runs.
+#######################################################
+
+#######################################################
+
+Prob. Crossover: 0.8
+Prob. Mutation: 0.05
+Population Size: 150
+Mutation: delete_mutation
+Crossover: sample_crossover
+Average obtained: 43.077777777777776
+Average first reached: 21.77777777777778
+Elitism: True
+There is no statistically significant difference in average fitness compared to previous runs.
+#######################################################
+
+#######################################################
+
+Prob. Crossover: 0.8
+Prob. Mutation: 0.1
+Population Size: 150
+Mutation: main_mutation
+Crossover: sample_crossover
+Average obtained: 41.14666666666667
+Average first reached: 19.583333333333332
+Elitism: True
+There is no statistically significant difference in average fitness compared to previous runs.
+#######################################################
+
+#######################################################
+
+Prob. Crossover: 0.9
+Prob. Mutation: 0.05
+Population Size: 150
+Mutation: main_mutation
+Crossover: sample_crossover
+Average obtained: 40.13333333333334
+Average first reached: 19.0
+Elitism: True
+There is no statistically significant difference in average fitness compared to previous runs.
+#######################################################
+
+#######################################################
+
+Prob. Crossover: 0.8
+Prob. Mutation: 0.05
+Population Size: 150
+Mutation: main_mutation
+Crossover: one_point_crossover
+Average obtained: 47.19333333333334
+Average first reached: 23.944444444444443
+Elitism: True
+There is no statistically significant difference in average fitness compared to previous runs.
+#######################################################
+
+#######################################################
+
+Prob. Crossover: 0.8
+Prob. Mutation: 0.05
+Population Size: 150
+Mutation: main_mutation
+Crossover: two_point_crossover
+Average obtained: 52.96
+Average first reached: 26.523809523809526
+Elitism: True
+There is no statistically significant difference in average fitness compared to previous runs.
+#######################################################
+
+#######################################################
+
+Prob. Crossover: 0.8
+Prob. Mutation: 0.05
+Population Size: 150
+Mutation: main_mutation
+Crossover: sample_crossover
+Average obtained: 50.92083333333334
+Average first reached: 24.708333333333332
+Elitism: False
+There is no statistically significant difference in average fitness compared to previous runs.
+#######################################################
+
+#######################################################
+
+Prob. Crossover: 0.8
+Prob. Mutation: 0.05
+Population Size: 100
+Mutation: main_mutation
+Crossover: sample_crossover
+Average obtained: 49.72444444444445
+Average first reached: 24.62962962962963
+Elitism: False
+There is no statistically significant difference in average fitness compared to previous runs.
+#######################################################
+
+#######################################################
+
+Prob. Crossover: 0.8
+Prob. Mutation: 0.05
+Population Size: 150
+Mutation: insert_mutation
+Crossover: sample_crossover
+Average obtained: 48.348
+Average first reached: 23.1
+Elitism: True
+There is no statistically significant difference in average fitness compared to previous runs.
+#######################################################
+
+#######################################################
+
+Prob. Crossover: 0.8
+Prob. Mutation: 0.1
+Population Size: 150
+Mutation: main_mutation
+Crossover: sample_crossover
+Average obtained: 37.21633333333333
+Average first reached: 16.416666666666668
+Elitism: True
+There is no statistically significant difference in average fitness compared to previous runs.
+#######################################################
+
+#######################################################
+
+Prob. Crossover: 0.8
+Prob. Mutation: 0.05
+Population Size: 150
+Mutation: main_mutation
+Crossover: two_point_crossover
+Average obtained: 55.43888888888889
+Average first reached: 21.855555555555554
+Elitism: True
+There is no statistically significant difference in average fitness compared to previous runs.
+#######################################################
+

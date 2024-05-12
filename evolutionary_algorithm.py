@@ -27,7 +27,7 @@ def ea(config):
         best = (config['mapping'](population[0]), population[0]['fitness'], len(population[0]['steps']))
         #if config['interactive_plot'] is not None:
            #update_graph(it, best[1], *config['interactive_plot'])
-        print("Gen:", it, best[0], best[1], best[2])
+        #print("Gen:", it, best[0], best[1], best[2])
         bests.append(best)
         new_population = []
         while len(new_population) < config['population_size']:
