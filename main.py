@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 import numpy as np
     
 
-def get_data(pop1 , pmut1 , pcross1 , mut1 , cross1, pop2 , pmut2 , pcross2 , mut2 , cross2):
+def get_data(pop1 , pmut1 , pcross1 , mut1 , cross1, elitism1, pop2 , pmut2 , pcross2 , mut2 , cross2, elitism2):
     
     config['population_size'] = pop1
     config['prob_mutation'] = pmut1
@@ -20,12 +20,21 @@ def get_data(pop1 , pmut1 , pcross1 , mut1 , cross1, pop2 , pmut2 , pcross2 , mu
     config['mutation'] = mut1
     config['crossover'] = cross1
     
+    if not(elitism1):
+        config['survivor_selection'] = survivor_generational
+    else:
+        config['survivor_selection'] = survivor_elitism(.02, maximization=False)
+    
+    fitness_reached = []
+    fitness_reached2 = []
+    
     runs = 30
     
     data1 = []
     data2 = []
     
     for i in range(runs):
+        best_fitness = 999999999999
         total_fitness = 0
         observation, info = config['env'].reset(seed=config['seed'])
         best = ea(config)
@@ -34,6 +43,13 @@ def get_data(pop1 , pmut1 , pcross1 , mut1 , cross1, pop2 , pmut2 , pcross2 , mu
         for i, item in enumerate(best):
             value_at_i = item[1]  
             total_fitness += value_at_i 
+            # Compare the value with the current minimum
+            if value_at_i < best_fitness:
+                best_fitness = value_at_i
+                first_max_index = i
+        
+        fitness_reached.append(first_max_index)
+        average_first_reached = sum(fitness_reached) / len(fitness_reached)
 
         data1.append(total_fitness / config['generations'])
 
@@ -43,7 +59,13 @@ def get_data(pop1 , pmut1 , pcross1 , mut1 , cross1, pop2 , pmut2 , pcross2 , mu
     config['mutation'] = mut2
     config['crossover'] = cross2
     
+    if not(elitism2):
+        config['survivor_selection'] = survivor_generational
+    else:
+        config['survivor_selection'] = survivor_elitism(.02, maximization=False)
+
     for i in range(runs):
+        best_fitness = 999999999999
         total_fitness = 0
         observation, info = config['env'].reset(seed=config['seed'])
         best = ea(config)
@@ -52,7 +74,14 @@ def get_data(pop1 , pmut1 , pcross1 , mut1 , cross1, pop2 , pmut2 , pcross2 , mu
         for i, item in enumerate(best):
             value_at_i = item[1]  
             total_fitness += value_at_i 
-
+            # Compare the value with the current minimum
+            if value_at_i < best_fitness:
+                best_fitness = value_at_i
+                first_max_index = i
+        
+        fitness_reached2.append(first_max_index)
+        average_first_reached2 = sum(fitness_reached2) / len(fitness_reached2)
+        
         data2.append(total_fitness / config['generations'])
 
     normal1 = test_normal_ks(data1)
@@ -61,31 +90,32 @@ def get_data(pop1 , pmut1 , pcross1 , mut1 , cross1, pop2 , pmut2 , pcross2 , mu
     average1 = sum(data1) / len(data1)
     average2 = sum(data2) / len(data2)
     
+    #Write the results to the text file
     if(normal1 and normal2):
-        if(ttest(data1,data2)):
-            write_stats_file(pcross1 , pmut1 , pop1 ,mut1 , cross1 , average1 ,pcross2 , pmut2 , pop2 ,mut2 , cross2 , average2 )
+        if(ttest(data1,data2) or ttest(fitness_reached , fitness_reached2)):
+            write_stats_file(pcross1 , pmut1 , pop1 ,mut1 , cross1 , average1 , average_first_reached,pcross2 , pmut2 , pop2 ,mut2 , cross2 , average2 , average_first_reached2)
             with open("statistics.txt", 'a') as file:
                 file.write("There is a statistically significant difference in average fitness compared to previous runs.\n")
                 file.write("#######################################################\n\n")
         else:
-            write_stats_file(pcross1 , pmut1 , pop1 ,mut1 , cross1 , average1 ,pcross2 , pmut2 , pop2 ,mut2 , cross2 , average2 )
+            write_stats_file(pcross1 , pmut1 , pop1 ,mut1 , cross1 , average1 , average_first_reached,pcross2 , pmut2 , pop2 ,mut2 , cross2 , average2 , average_first_reached2)
             with open("statistics.txt", 'a') as file:
                 file.write("There is no statistically significant difference in average fitness compared to previous runs.\n")
                 file.write("#######################################################\n\n")
     else:
-        if(mann_whitney(data1,data2)):
-            write_stats_file(pcross1 , pmut1 , pop1 ,mut1 , cross1 , average1 ,pcross2 , pmut2 , pop2 ,mut2 , cross2 , average2 )
+        if(mann_whitney(data1,data2) or (mann_whitney(fitness_reached , fitness_reached2))):
+            write_stats_file(pcross1 , pmut1 , pop1 ,mut1 , cross1 , average1 , average_first_reached,pcross2 , pmut2 , pop2 ,mut2 , cross2 , average2 , average_first_reached2)
             with open("statistics.txt", 'a') as file:
                 file.write("There is a statistically significant difference in average fitness compared to previous runs.\n")
                 file.write("#######################################################\n\n")
         else:
-            write_stats_file(pcross1 , pmut1 , pop1 ,mut1 , cross1 , average1 ,pcross2 , pmut2 , pop2 ,mut2 , cross2 , average2 )
+            write_stats_file(pcross1 , pmut1 , pop1 ,mut1 , cross1 , average1 , average_first_reached,pcross2 , pmut2 , pop2 ,mut2 , cross2 , average2 , average_first_reached2)
             with open("statistics.txt", 'a') as file:
                 file.write("There is no statistically significant difference in average fitness compared to previous runs.\n")
                 file.write("#######################################################\n\n")
 
 
-def write_stats_file(pcross1 , pmut1 , pop1 ,mut1 , cross1 , average1 ,pcross2 , pmut2 , pop2 ,mut2 , cross2 , average2 ):
+def write_stats_file(pcross1 , pmut1 , pop1 ,mut1 , cross1 , average1, average_first_reached ,pcross2 , pmut2 , pop2 ,mut2 , cross2 , average2, average_first_reached2 ):
     with open("statistics.txt", 'a') as file:
         file.write("#######################################################\n\n")
         file.write("Prob. Crossover: %s\n" % pcross1)
@@ -94,6 +124,7 @@ def write_stats_file(pcross1 , pmut1 , pop1 ,mut1 , cross1 , average1 ,pcross2 ,
         file.write("Mutation: " + mut1.__name__ + "\n")
         file.write("Crossover: " + cross1.__name__ + "\n")
         file.write("Average obtained: %s\n" % average1)
+        file.write("Average first reached: %s\n" % average_first_reached)
         file.write("-------------------------------------------------------\n\n")
         file.write("Prob. Crossover: %s\n" % pcross2)
         file.write("Prob. Mutation: %s\n" % pmut2)
@@ -101,6 +132,7 @@ def write_stats_file(pcross1 , pmut1 , pop1 ,mut1 , cross1 , average1 ,pcross2 ,
         file.write("Mutation: " + mut2.__name__ + "\n")
         file.write("Crossover: " + cross2.__name__ + "\n")
         file.write("Average obtained: %s\n" % average2)
+        file.write("Average first reached: %s\n" % average_first_reached2)
 
 def test_normal_ks(data):
     """Kolgomorov-Smirnov"""
@@ -259,8 +291,20 @@ if __name__ == '__main__':
     
     config['fitness_function'] = function_fitness(config)
     
-    get_data(150 , 0.05, 0.8 , main_mutation ,sample_crossover ,150 , 0.05, 0.8 , main_mutation ,one_point_crossover)
-
+    population_size = [150 , 100 , 50, 150 , 150 ,150 , 150 ,150 , 150 , 150, 150,150]
+    prob_mutation = [0.05 , 0.05 , 0.05 ,0.1 , 0.075, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05]
+    prob_crossover = [0.8 , 0.8, 0.8, 0.8, 0.8, 0.7, 0.9, 0.8, 0.8, 0.8, 0.8, 0.8]
+    mutations = [main_mutation , main_mutation , main_mutation, main_mutation , main_mutation , main_mutation , main_mutation , delete_mutation, insert_mutation, change_value_mutation, main_mutation , main_mutation]
+    crossovers = [sample_crossover , sample_crossover, sample_crossover, sample_crossover, sample_crossover, sample_crossover, sample_crossover, sample_crossover, sample_crossover, sample_crossover, one_point_crossover, two_point_crossover ]
+    
+    # Do the statistical test between all the configurations.
+    for i in range(12):
+        #Check the first config with elitism and without elitism
+        get_data(population_size[i] , prob_mutation[i], prob_crossover[i] , mutations[i] , crossovers[i] , True ,population_size[i] , prob_mutation[i], prob_crossover[i] , mutations[i] , crossovers[i] , False )
+        
+        for k in range(i , 12):
+            get_data(population_size[i] , prob_mutation[i], prob_crossover[i] , mutations[i] , crossovers[i] , True ,population_size[k] , prob_mutation[k], prob_crossover[k] , mutations[k] , crossovers[k] , True)
+    
     for map in range(0):
         
         best_overall = []
