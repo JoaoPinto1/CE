@@ -1,3 +1,6 @@
+#Evolutionary Algorithm for the Frozen Lake Problem
+#Author: André Moreira, João Pinto
+
 import matplotlib.pyplot as plt 
 import numpy as np
 
